@@ -158,12 +158,22 @@ def main():
         return
     
     # Display the most recent events (limit to 10 for readability)
-    for event in events:
+    for i, event in enumerate(events):
         formatted = format_event(event, repo_events)
-        print(formatted)
+        if i < 10:
+            print(formatted)
 
+    if len(events) > 10:
+        print(f"\n... and {len(events) - 10 } more events")
+
+    # For lazy debugging: print(repo_events)
+    print('-' * 50)
+    print("Summary")
+    print('-' * 50)
+
+    # Learn lesson: if there is other part that needs the same response and decision making, OOP can be reduce the redundancy
     for repo, events  in repo_events.items():
-        for event, count in events:
+        for event, count in events.items():
             if event=="PushEvent":
                 print(f"- Pushed {count} commit(s) to {repo}.")
             elif event == "IssuesEvent":
@@ -182,13 +192,6 @@ def main():
                 print(f"- Act on member {count} times.")
             else:
                 print(f"- {count} unspecified events")
-            
-    if len(events) > 10:
-        print(f"\n... and {len(events) - 10 } more events")
-    print('-' * 50)
-    print("Summary")
-    print('-' * 50)
-
 
 if __name__ == "__main__":
     main()
