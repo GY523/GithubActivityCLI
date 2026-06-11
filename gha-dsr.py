@@ -69,46 +69,47 @@ def format_event(event, repo_events: dict):
         time_ago = 'unknown time'
 
     # Format based on event type
-    if event_type == 'PushEvent':
-        # Add one event into the list value of a repo
-        return f"- Committed to {repo_name} {time_ago}"
+    match event_type:
+        case 'PushEvent':
+            # Add one event into the list value of a repo
+            return f"- Committed to {repo_name} {time_ago}"
 
-    elif event_type == "IssuesEvent":
-        action = event.get('payload', {}).get('action', 'opened')
-        return f"- {action.capitalize()} an issue in {repo_name} {time_ago}"
+        case "IssuesEvent":
+            action = event.get('payload', {}).get('action', 'opened')
+            return f"- {action.capitalize()} an issue in {repo_name} {time_ago}"
     
-    elif event_type == 'WatchEvent':
-        return f"- Starred {repo_name} {time_ago}"
+        case 'WatchEvent':
+            return f"- Starred {repo_name} {time_ago}"
     
-    elif event_type == "ForkEvent":
-        action = event.get('payload', {}).get('action', 'forked')
-        forkee = event.get('payload', {}).get('forkee', {}).get('name', 'unknown-repo')
-        return f"- {action} {repo_name} to {forkee} {time_ago}"
+        case "ForkEvent":
+            action = event.get('payload', {}).get('action', 'forked')
+            forkee = event.get('payload', {}).get('forkee', {}).get('name', 'unknown-repo')
+            return f"- {action} {repo_name} to {forkee} {time_ago}"
     
-    elif event_type == "CreateEvent":
-        ref_type = event.get('payload', {}).get('ref_type', 'repository')
-        ref = event.get('payload', {}).get('ref', '')
-        if ref:
-            return f"- Created {ref_type} {ref} in {repo_name} {time_ago}"
-        return f"- Created {ref_type} in {repo_name} {time_ago}"
+        case "CreateEvent":
+            ref_type = event.get('payload', {}).get('ref_type', 'repository')
+            ref = event.get('payload', {}).get('ref', '')
+            if ref:
+                return f"- Created {ref_type} {ref} in {repo_name} {time_ago}"
+            return f"- Created {ref_type} in {repo_name} {time_ago}"
     
-    elif event_type == 'PullRequestEvent':
-        action = event.get('payload', {}).get('action', 'opened')
-        pr_title = event.get('payload', {}).get('pull_request', {}).get('title', '')
-        return f"- {action.capitalize()} a pull request in {repo_name}: \"{pr_title}\" {time_ago}"
+        case 'PullRequestEvent':
+            action = event.get('payload', {}).get('action', 'opened')
+            pr_title = event.get('payload', {}).get('pull_request', {}).get('title', '')
+            return f"- {action.capitalize()} a pull request in {repo_name}: \"{pr_title}\" {time_ago}"
     
-    elif event_type == 'DeleteEvent':
-        ref_type = event.get('payload', {}).get('ref_type', 'branch')
-        ref = event.get('payload', {}).get('ref', '')
-        return f"- Deleted {ref_type} {ref} in {repo_name} {time_ago}"
+        case 'DeleteEvent':
+            ref_type = event.get('payload', {}).get('ref_type', 'branch')
+            ref = event.get('payload', {}).get('ref', '')
+            return f"- Deleted {ref_type} {ref} in {repo_name} {time_ago}"
     
-    elif event_type == "MemberEvent":
-        action = event.get('payload', {}).get('action', 'added')
-        member = event.get('payload', {}).get('member', {}).get('login', 'someone')
-        return f"- {action.capitalize()} {member} as collaborator to {repo_name} {time_ago}"
+        case "MemberEvent":
+            action = event.get('payload', {}).get('action', 'added')
+            member = event.get('payload', {}).get('member', {}).get('login', 'someone')
+            return f"- {action.capitalize()} {member} as collaborator to {repo_name} {time_ago}"
 
-    else:
-        return f"- {event_type} in {repo_name} {time_ago}"
+        case _:
+            return f"- {event_type} in {repo_name} {time_ago}"
         
 def format_time_ago(timestamp):
     """Convert timestamp to a relatvie time string"""
@@ -174,24 +175,25 @@ def main():
     # Learn lesson: if there is other part that needs the same response and decision making, OOP can be reduce the redundancy
     for repo, events  in repo_events.items():
         for event, count in events.items():
-            if event=="PushEvent":
-                print(f"- Pushed {count} commit(s) to {repo}.")
-            elif event == "IssuesEvent":
-                print(f"- Opened {count} issue(s) in {repo}.")
-            elif event == "WatchEvent":
-                print(f"- Starred {count} repositories.")
-            elif event == "ForkEvent":
-                print(f"- Forked {count} repositories.")
-            elif event == "CreateEvent":
-                print(f"- Created {count} branch, tag or repository.")
-            elif event == "PullRequestEvent":
-                print(f"- Opened or act {count} times on a pull request in {repo}.")
-            elif event == "DeleteEvent":
-                print(f"- Deleted {count} repositories.")
-            elif event == "MemberEvent":
-                print(f"- Act on member {count} times.")
-            else:
-                print(f"- {count} unspecified events")
+            match event:
+                case "PushEvent":
+                    print(f"- Pushed {count} commit(s) to {repo}.")
+                case "IssuesEvent":
+                    print(f"- Opened {count} issue(s) in {repo}.")
+                case "WatchEvent":
+                    print(f"- Starred {count} repositories.")
+                case "ForkEvent":
+                    print(f"- Forked {count} repositories.")
+                case "CreateEvent":
+                    print(f"- Created {count} branch, tag or repository.")
+                case "PullRequestEvent":
+                    print(f"- Opened or act {count} times on a pull request in {repo}.")
+                case "DeleteEvent":
+                    print(f"- Deleted {count} repositories.")
+                case "MemberEvent":
+                    print(f"- Act on member {count} times.")
+                case _:
+                    print(f"- {count} unspecified events")
 
 if __name__ == "__main__":
     main()
