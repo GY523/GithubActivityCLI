@@ -17,5 +17,5 @@ Clone this repository or download the gha-dsr.py
 
 ## Run the program
 ```
-    python gha-dsr.py \<username\>
+    python gha-dsr.py <username>
 ```
